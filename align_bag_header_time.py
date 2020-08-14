@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 Example:
     python align_bag_header_time.py -i 2020-06-12-14-24-36_lane_inhouse.bag
@@ -26,8 +26,11 @@ def align_offset(inbags):
         if not (msg_start_time and time_offset):
           msg_start_time = msg.header.stamp
           time_offset = rospy.rostime.Time.from_sec(bag_start_time) - msg_start_time
-        new_timestamp = msg.header.stamp + time_offset
-        msg.header.stamp = new_timestamp
+        if msg.header.stamp:
+          new_timestamp = msg.header.stamp + time_offset
+          msg.header.stamp = new_timestamp
+        else:
+          continue
       outbag.write(topic, msg, new_timestamp)
     outbag.close()
 
